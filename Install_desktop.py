@@ -11,9 +11,9 @@ def download_packages():
      "https://az764295.vo.msecnd.net/stable/695af097c7bd098fbf017ce3ac85e09bbc5dda06/code_1.79.2-1686734195_amd64.deb",
     ]
     
-   subprocess.call(['cd','/tmp'])  
-   subprocess.call(['mkdir','pkgs'])
-   subprocess.call(['cd','/pkgs'])
+    subprocess.call(['cd','/tmp'])  
+    subprocess.call(['mkdir','pkgs'])
+    subprocess.call(['cd','/pkgs'])
             
     for package in packages:       
             

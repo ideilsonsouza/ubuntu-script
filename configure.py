@@ -22,7 +22,7 @@ def configure_mysql():
     with open('/etc/mysql/mariadb.conf.d/50-server.cnf', 'w') as configfile:
         config.write(configfile)
         
-   subprocess.call(['sudo', 'systemctl', 'restart', 'mariadb.service']) 
+    subprocess.call(['sudo', 'systemctl', 'restart', 'mariadb.service']) 
 
 def create_users():
     # Conectar ao banco de dados
@@ -59,7 +59,7 @@ def create_users():
     connection.close()   
     
     
-   def main():
+def main():
     
     configure_mysql()
     print("Configuração do MySQL atualizada com sucesso!")
