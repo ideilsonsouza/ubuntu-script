@@ -6,6 +6,7 @@ def configure_git():
     subprocess.call(['git', 'config', '--global', 'user.name', 'Ideilson Souza'])
     subprocess.call(['git', 'config', '--global', 'user.email', 'ideilson.raise@gmail.com'])
     subprocess.call(['git', 'config', '--global', 'color.ui', 'auto'])
+    subprocess.call(['git', 'config', '--global', 'init.defaultBranch', 'master'])
 
 def install_composer():
     # Baixar o instalador do Composer
