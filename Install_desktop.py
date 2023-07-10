@@ -1,7 +1,7 @@
 import subprocess
 import configparser
 import sys
-
+#inkscape para instalar
 def download_package(package_name):
     # Instalar o pacote
     subprocess.call(['wget','-f', package_name,])
