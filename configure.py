@@ -1,15 +1,23 @@
 import subprocess
 import configparser
+import mysql.connector
 import sys
+import server
+import var_global
+import packages
+import module
 
-def install_mysql_connector():
-    try:
-        subprocess.call([sys.executable, '-m', 'pip', 'install', 'mysql-connector-python'])
-        import mysql.connector
-        print("O módulo mysql-connector-python foi instalado com sucesso.")
-    except Exception as e:
-        print("Ocorreu um erro ao instalar o módulo mysql-connector-python:", str(e))
-        
+
+def configure_git():
+    subprocess.call(['git', 'config', '--global',
+                    'user.name', var_global.git_name])
+    subprocess.call(['git', 'config', '--global',
+                    'user.email', var_global.git_email])
+    subprocess.call(['git', 'config', '--global', 'color.ui', 'auto'])
+    subprocess.call(['git', 'config', '--global',
+                    'init.defaultBranch', var_global.git_Branch])
+
+
 def configure_mysql():
     # Carregar o arquivo de configuração
     config = configparser.ConfigParser()
@@ -18,30 +26,32 @@ def configure_mysql():
     # Alterar a configuração para permitir acesso externo
     config.set('mysqld', 'bind-address', '0.0.0.0')
 
+    # Trocar a porta para a porta desejada (por exemplo, 3307)
+    config.set('mysqld', 'port', '3360')
+
     # Salvar as alterações
     with open('/etc/mysql/mariadb.conf.d/50-server.cnf', 'w') as configfile:
         config.write(configfile)
-        
-    subprocess.call(['sudo', 'systemctl', 'restart', 'mariadb.service']) 
+
+    subprocess.call(['sudo', 'systemctl', 'restart', 'mariadb.service'])
+
 
 def create_users():
     # Conectar ao banco de dados
-   # subprocess.call(['sudo','mysql_secure_installation'])
-    
+
     from mysql.connector import (connection)
     connection = connection.MySQLConnection(host='127.0.0.1',
-                                         user='root',
-                                         )
-  
-    
+                                            user='root', port='3060'
+                                            )
+
     cursor = connection.cursor()
 
     # Comandos SQL para criar usuários
     sql_commands = [
-        "CREATE USER 'ideilson'@'%' IDENTIFIED BY '@Ics#2304';",
+        "CREATE USER 'ideilson'@'%' IDENTIFIED BY '237091';",
         "CREATE USER 'admin'@'localhost' IDENTIFIED BY 'AdminMaster2023';",
         "GRANT ALL PRIVILEGES ON *.* TO 'ideilson'@'%' WITH GRANT OPTION;",
-        "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION;",
+        "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;",
     ]
 
     # Executar os comandos SQL
@@ -56,19 +66,4 @@ def create_users():
 
     # Fechar a conexão
     cursor.close()
-    connection.close()   
-    
-    
-def main():
-    
-    configure_mysql()
-    print("Configuração do MySQL atualizada com sucesso!")
-    
-    install_mysql_connector()
-    
-    create_users()
-    print("Usuários criados com sucesso no MariaDB!")
-
-if __name__ == '__main__':
-    main()
-
+    connection.close()

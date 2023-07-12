@@ -1,138 +1,17 @@
-import subprocess
-import configparser
-import sys
+import server
+import packages
+import module
+    
+def main():   
+    
+    server.install_packages_snap()
+    server.install_packages()
 
+    packages.install_composer()
+    packages.install_nvm()
 
-def configure_git():
-    subprocess.call(['git', 'config', '--global',
-                    'user.name', 'Ideilson Souza'])
-    subprocess.call(['git', 'config', '--global',
-                    'user.email', 'ideilson.raise@gmail.com'])
-    subprocess.call(['git', 'config', '--global', 'color.ui', 'auto'])
-    subprocess.call(['git', 'config', '--global',
-                    'init.defaultBranch', 'master'])
-
-
-def install_composer():
-    # Baixar o instalador do Composer
-    subprocess.call(['curl', '-sS', 'https://getcomposer.org/installer',
-                    '-o', '/tmp/composer-setup.php'])
-
-    # Obter o hash do instalador
-    hash_command = ['curl', '-sS', 'https://composer.github.io/installer.sig']
-    result = subprocess.run(hash_command, capture_output=True, text=True)
-    composer_hash = result.stdout.strip()
-
-    # Verificar o hash do instalador
-    verify_command = [
-        'php', '-r',
-        f"if (hash_file('SHA384', '/tmp/composer-setup.php') === '{composer_hash}') "
-        "{ echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-    ]
-    subprocess.call(verify_command)
-
-    # Instalar o Composer
-    subprocess.call(['sudo', 'php', '/tmp/composer-setup.php',
-                    '--install-dir=/usr/local/bin', '--filename=composer'])
-
-    # Testar a instalação
-    subprocess.call(['composer'])
-
-
-def install_nvm():
-    subprocess.call(
-        ['curl', 'https://raw.githubusercontent.com/creationix/nvm/master/install.sh', '|', 'bash'])
-    subprocess.call(['source', '~/.profile'])
-    subprocess.call(['nvm', 'install', 'node'])
-
-
-def check_package_installed(package_name):
-    # Verificar se o pacote está instalado
-    result = subprocess.run(['dpkg', '-s', package_name],
-                            capture_output=True, text=True)
-    return result.returncode == 0
-
-
-def add_repository(repository_name):
-    subprocess.call(['sudo', 'add-apt-repository', '-y', repository_name])
-
-
-def add_repositorys():
-    repositorys = [
-        'ppa:nginx/stable',
-    ]
-    for repository in repositorys:
-        add_repository(repository)
-        print(f'O repository {repository} instalado.')
-
-
-def install_package(package_name):
-    # Instalar o pacote
-    subprocess.call(['sudo', 'apt', 'install', package_name, '-y'])
-
-
-def install_packages():
-    packages = [
-        'xsel',
-        'jq',
-        'libnss3-tools',
-        'network-manager',
-        'python3-pip',
-        'curl',
-        'git',
-        'zip',
-        'rar',
-        'curl',
-        'unzip',
-        'unrar',
-        'ca-certificates',
-        'apt-transport-https',
-        'lsb-release',
-        'software-properties-common',
-        'apache2',
-        'mariadb-server',
-        'php',
-        'mariadb-client',
-        'libmariadb-dev',
-        'libapache2-mod-php',
-        'php-intl',
-        'php-sqlite3',
-        'php-mysql',
-        'php-pgsql',
-        'php-redis'
-        'php-gd',
-        'php-mbstring',
-        'php-curl',
-        'php-cli',
-        'php-xml',
-        'php-zip',
-        'php-redis'
-    ]
-
-    # Verificar se cada pacote está instalado e instalá-lo se não estiver
-    for package in packages:
-        if not check_package_installed(package):
-            install_package(package)
-        else:
-            print(f'O pacote {package} já está instalado.')
-
-    # Reiniciar o Apache
-    subprocess.call(['sudo', 'systemctl', 'restart', 'apache2'])
-
-
-def main():
-    add_repositorys()
-    print("Repositórios instalados com sucesso!")
-
-    install_packages()
-    print("Ambiente de desenvolvimento configurado com sucesso!")
-
-    configure_git()
-    print("Configuração do Git concluída!")
-
-    install_composer()
-    print("Composer instalado com sucesso!")
-
+    packages.composer_install_pkgs()
+    packages.nvm_install_pkgs()
 
 if __name__ == '__main__':
     main()

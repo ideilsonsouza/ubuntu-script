@@ -1,7 +1,7 @@
 import subprocess
 import configparser
 import sys
-#inkscape para instalar
+
 def download_package(package_name):
     # Instalar o pacote
     subprocess.call(['wget','-f', package_name,])
@@ -20,9 +20,31 @@ def download_packages():
             download_package(package)   
             subprocess.call(['sudo','dpkg','-i','*.deb'])     
             print(f'O pacote {package} foi baixado.')
-def main():
 
- download_packages()
- 
-if __name__ == '__main__':
-    main()
+def install_package(package_name):
+    # Instalar o pacote
+    subprocess.call(['sudo', 'apt', 'install', package_name, '-y'])
+
+def check_package_installed(package_name):
+    # Verificar se o pacote está instalado
+    result = subprocess.run(['dpkg', '-s', package_name],
+                            capture_output=True, text=True)
+    return result.returncode == 0            
+
+def install_packages():
+    packages = [
+        'inkscape',
+        'ubuntu-restricted-extras',
+        'libavcodec-extra', 
+        'libavc1394-tools',
+        'vlc',
+        'telegram-desktop'
+        'kazam'
+    ]
+
+    # Verificar se cada pacote está instalado e instalá-lo se não estiver
+    for package in packages:
+        if not check_package_installed(package):
+         install_package(package)
+        else:
+            print(f'O pacote {package} já está instalado.')
